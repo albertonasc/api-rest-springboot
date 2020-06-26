@@ -41,9 +41,9 @@ public class BookController {
                 ResponseEntity.ok(books);
     }
 
-    @PostMapping
-    public String post(Book book) {
-        Book bookReserved = service.insertReserv(book);
+    @PostMapping("/{bookId}/reserve")
+    public String post(@PathVariable("bookId") Long bookId) {
+        Book bookReserved = service.insertReserv(bookId);
 
         return "Livro reservado com sucesso: " + bookReserved.getId();
     }

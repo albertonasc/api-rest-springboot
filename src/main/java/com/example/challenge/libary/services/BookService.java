@@ -28,10 +28,9 @@ public class BookService {
         return repository.findByClientId(idClint);
     }
 
-    public Book insertReserv(Book book) {
-        Assert.isNull(book.getId(), "Não foi possivel fazer a Reserva");
+    public Book insertReserv(Long bookId) {
+        Optional<Book> optional = getBookById(bookId);
 
-        Optional<Book> optional = getBookById(book.getId());
         if(optional.isPresent()) {
             Book db = optional.get();
             db.setStatus(BookStatus.EMPRESTADO);
