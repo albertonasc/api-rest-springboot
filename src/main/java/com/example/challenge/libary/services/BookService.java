@@ -1,14 +1,15 @@
 package com.example.challenge.libary.services;
 
+import com.example.challenge.libary.controllers.BookDto;
 import com.example.challenge.libary.models.Book;
 import com.example.challenge.libary.models.BookStatus;
 import com.example.challenge.libary.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BookService {
@@ -16,20 +17,31 @@ public class BookService {
     @Autowired
     private BookRepository repository;
 
-    public List<Book> getBooks() {
-        return repository.findAll();
+    public List<BookDto> getBooks() {
+        return repository.findAll().stream().map(BookDto::new).collect(Collectors.toList());
     }
 
-    public Optional<Book> getBookById(Long id) {
-        return repository.findById(id);
+    public Optional<BookDto> getBookById(Long id) {
+        return repository.findById(id).map(BookDto::new);
     }
 
-    public List<Book> getBorrowedBooks(Long idClint) {
-        return repository.findByClientId(idClint);
+    public BookDto getBorrowedBooks(Long idClint) {
+        Optional<Book> clientData = repository.findByClientId(idClint);
+
+        if(clientData.isPresent()) {
+            Book clientBorrow = clientData.get();
+            if(clientBorrow.getStatus() == BookStatus.EMPRESTADO) {
+                return new BookDto(clientBorrow);
+            } else {
+                throw new RuntimeException("Não existem livros emprestados");
+            }
+        }
+
+        return null;
     }
 
-    public Book insertReserv(Long bookId) {
-        Optional<Book> optional = getBookById(bookId);
+    public BookDto insert(Long bookId) {
+        Optional<Book> optional = repository.findById(bookId);
 
         if(optional.isPresent()) {
             Book db = optional.get();
@@ -37,7 +49,7 @@ public class BookService {
 
             repository.save(db);
 
-            return db;
+            return new BookDto(db);
         } else {
             throw new RuntimeException("Não foi possivel atualizar o Status");
         }

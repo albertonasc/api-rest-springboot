@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/books")
@@ -17,15 +18,13 @@ public class BookController {
     private BookService service;
 
     @GetMapping
-    public ResponseEntity<List<Book>> get() {
-        List<Book> books = service.getBooks();
-
-        return ResponseEntity.ok().body(books);
+    public ResponseEntity<List<BookDto>> get() {
+        return ResponseEntity.ok().body(service.getBooks());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity get(@PathVariable("id") Long id) {
-        Optional<Book> book = service.getBookById(id);
+        Optional<BookDto> book = service.getBookById(id);
 
         return book.isPresent() ?
                 ResponseEntity.ok(book.get()) :
@@ -34,7 +33,7 @@ public class BookController {
 
     @GetMapping("/client/{id_client}")
     public ResponseEntity getBorrowed(@PathVariable("id_client") Long idClint) {
-        List<Book> books = service.getBorrowedBooks(idClint);
+        Optional<BookDto> books = Optional.ofNullable(service.getBorrowedBooks(idClint));
 
         return books.isEmpty() ?
                 ResponseEntity.noContent().build() :
@@ -43,7 +42,7 @@ public class BookController {
 
     @PostMapping("/{bookId}/reserve")
     public String post(@PathVariable("bookId") Long bookId) {
-        Book bookReserved = service.insertReserv(bookId);
+        BookDto bookReserved = service.insert(bookId);
 
         return "Livro reservado com sucesso: " + bookReserved.getId();
     }
