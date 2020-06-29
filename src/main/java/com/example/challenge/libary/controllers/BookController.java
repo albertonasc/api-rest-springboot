@@ -1,6 +1,5 @@
 package com.example.challenge.libary.controllers;
 
-import com.example.challenge.libary.models.Book;
 import com.example.challenge.libary.services.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -8,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/books")
@@ -31,9 +29,9 @@ public class BookController {
                 ResponseEntity.notFound().build();
     }
 
-    @GetMapping("/client/{id_client}")
-    public ResponseEntity getBorrowed(@PathVariable("id_client") Long idClint) {
-        Optional<BookDto> books = Optional.ofNullable(service.getBorrowedBooks(idClint));
+    @GetMapping("/client/{clientId}/books")
+    public ResponseEntity getBorrowed(@PathVariable("clientId") Long clientId) {
+        Optional<BookDto> books = Optional.ofNullable(service.getBorrowedBooks(clientId));
 
         return books.isEmpty() ?
                 ResponseEntity.noContent().build() :
@@ -45,6 +43,13 @@ public class BookController {
         BookDto bookReserved = service.insert(bookId);
 
         return "Livro reservado com sucesso: " + bookReserved.getId();
+    }
+
+    @PutMapping("/{bookId}/return")
+    public String put(@PathVariable("bookId") Long bookId) {
+        BookDto bookReturned = service.update(bookId);
+
+        return "Livro devolvido com sucesso: " + bookReturned.getId();
     }
 
 }

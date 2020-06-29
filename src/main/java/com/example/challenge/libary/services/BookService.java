@@ -7,6 +7,7 @@ import com.example.challenge.libary.repositories.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,8 +26,8 @@ public class BookService {
         return repository.findById(id).map(BookDto::new);
     }
 
-    public BookDto getBorrowedBooks(Long idClint) {
-        Optional<Book> clientData = repository.findByClientId(idClint);
+    public BookDto getBorrowedBooks(Long clientId) {
+        Optional<Book> clientData = repository.findByClientId(clientId);
 
         if(clientData.isPresent()) {
             Book clientBorrow = clientData.get();
@@ -46,6 +47,7 @@ public class BookService {
         if(optional.isPresent()) {
             Book db = optional.get();
             db.setStatus(BookStatus.EMPRESTADO);
+            db.setDateReserve(new Date());
 
             repository.save(db);
 
@@ -54,5 +56,25 @@ public class BookService {
             throw new RuntimeException("Não foi possivel atualizar o Status");
         }
 
+    }
+
+    public BookDto update(Long bookId) {
+        Optional<Book> optional = repository.findById(bookId);
+
+        if(optional.isPresent()) {
+            Book db = optional.get();
+            db.setDateReturn(new Date());
+            db.totalValue(db.getDateReserve(), db.getDateReturn());
+
+            if (db.getValue() == 0.0) {
+                db.setStatus(BookStatus.DISPONIVEL);
+            }
+
+            repository.save(db);
+
+            return new BookDto(db);
+        } else {
+            throw new RuntimeException("Não foi possivel atualizar o Status");
+        }
     }
 }
