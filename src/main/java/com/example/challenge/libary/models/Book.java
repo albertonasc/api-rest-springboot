@@ -70,8 +70,8 @@ public class Book {
 
     public double totalValue(Date dateReserve, Date dateReturn) {
         value = 5.0;
-        Double valueJ;
-        Double valueM;
+        Double interestPerDay;
+        Double fine;
 
         Calendar calReserve = Calendar.getInstance();
         Calendar calReturn = Calendar.getInstance();
@@ -84,14 +84,14 @@ public class Book {
         int qtDays = dayReturn - dayReserve;
 
         if(qtDays > 3) {
-            valueJ = 5 + qtDays * 0.004;
-            valueM = valueJ * 0.05;
-            value += valueM;
+            interestPerDay = 5 + qtDays * 0.004;
+            fine = interestPerDay * 0.05;
+            value += fine;
         }
         else if (qtDays > 5) {
-            valueJ = 5 + qtDays * 0.006;
-            valueM = valueJ * 0.07;
-            value += valueM;
+            interestPerDay = 5 + qtDays * 0.006;
+            fine = interestPerDay * 0.07;
+            value += fine;
         }
         else {
             value = 0.0;

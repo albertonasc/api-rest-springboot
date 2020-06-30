@@ -3,9 +3,9 @@ package com.example.challenge.libary.repositories;
 import com.example.challenge.libary.models.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
+import java.util.List;
 
 public interface BookRepository extends JpaRepository<Book, Long> {
 
-    Optional<Book> findByClientId(Long idClint);
+    List<Book> findByClientId(Long idClint);
 }

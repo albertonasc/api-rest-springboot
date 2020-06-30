@@ -27,14 +27,13 @@ public class BookService {
     }
 
     public BookDto getBorrowedBooks(Long clientId) {
-        Optional<Book> clientData = repository.findByClientId(clientId);
-
-        if(clientData.isPresent()) {
-            Book clientBorrow = clientData.get();
-            if(clientBorrow.getStatus() == BookStatus.EMPRESTADO) {
-                return new BookDto(clientBorrow);
-            } else {
-                throw new RuntimeException("Não existem livros emprestados");
+        for(Book clientData : repository.findByClientId(clientId)) {
+            if(clientData != null) {
+                if(clientData.getStatus() == BookStatus.EMPRESTADO) {
+                    return new BookDto(clientData);
+                } else {
+                    throw new RuntimeException("Não existem livros emprestados");
+                }
             }
         }
 
